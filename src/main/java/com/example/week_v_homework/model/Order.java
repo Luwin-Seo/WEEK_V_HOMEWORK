@@ -1,9 +1,15 @@
 package com.example.week_v_homework.model;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 public class Order {
 
     @Id
@@ -11,9 +17,14 @@ public class Order {
     private Long id;
 
     @Column
-    private Long restaurantId;
+    private Long restaurantName;
 
     @Column
-    @OneToMany
-    private List<Menu> oderedMenu;
+    private int deliveryFee;
+
+    @Column
+    private int totalPrice;
+
+
+
 }
