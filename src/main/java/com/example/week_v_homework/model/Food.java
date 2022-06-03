@@ -1,5 +1,6 @@
 package com.example.week_v_homework.model;
 
+import com.example.week_v_homework.dto.MenuRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,12 +21,18 @@ public class Food {
     private Long id;
 
     @Column
-    private String foodName;
-
-    @Column
     private Long restaurantId;
 
     @Column
+    private String name;
+
+    @Column
     private int price;
+
+    public Food(Long id, MenuRequestDto requestDto) {
+        this.restaurantId = id;
+        this.name = requestDto.getName();
+        this.price = requestDto.getPrice();
+    }
 
 }
