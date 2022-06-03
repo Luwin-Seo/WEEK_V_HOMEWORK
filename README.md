@@ -21,6 +21,10 @@
         1. 등록 시 입력한 음식점 정보 (name, minOrderPrice, deliveryFee)
         2. DB 테이블 ID (id)
 
+https://www.notion.so/a5fe16959bca4499acc7297e682a37f3?v=d82de5989ab241eda5e1bb5a2ae80270
+
+
+
 - 음식점 ID 및 음식 정보 입력받아 등록
     1. 음식점 ID (restaurantId)
         1. 음식점 DB 테이블 ID
@@ -35,6 +39,8 @@
     - 하나의 음식점에 등록된 모든 음식 정보 조회
         1. 등록 시 입력한 음식 정보 (name, price)
         2. DB 테이블 ID (id)
+
+https://www.notion.so/65f29fb53987440182c7400a762ad595?v=97150c47770e47f2a30eb5de77de1b54
 
 - 주문 요청 시 배달 음식점 및 음식 정보 입력받음
     1. 음식점 ID (restaurantId)
@@ -61,4 +67,10 @@
         
 - 주문 조회
     - 그동안 성공한 모든 주문 요청을 조회 가능
+
+https://www.notion.so/543a3beabd5541f997b92ca619b81856?v=e1ba5f7a976c4896a37abd5b20accb8e
+
+
+
+
 
