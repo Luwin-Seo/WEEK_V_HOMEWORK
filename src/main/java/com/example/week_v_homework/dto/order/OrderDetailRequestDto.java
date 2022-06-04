@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Getter
 public class OrderDetailRequestDto {
-    private int foodId;
+    private Long foodId;
     private int quantity;
 }
