@@ -26,6 +26,9 @@ public class OrderDetail {
     private Long foodId;
 
     @Column
+    private String foodName;
+
+    @Column
     private int Quantity;
 
     @Column

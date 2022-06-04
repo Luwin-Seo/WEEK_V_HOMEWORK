@@ -3,11 +3,13 @@ package com.example.week_v_homework.dto.order;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 
 @NoArgsConstructor
 @Getter
+@Setter
 public class OrderResponseDto {
     private String restaurantName;
     private List<OrderDetailResponseDto> OrderDetailRp;

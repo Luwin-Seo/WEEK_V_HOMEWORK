@@ -24,6 +24,6 @@ public class OrderController {
 
     @GetMapping("/orders")
     public List<OrderResponseDto> orderInquiry(){
-        return null;
+        return orderService.getOrders();
     }
 }

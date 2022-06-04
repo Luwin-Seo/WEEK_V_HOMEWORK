@@ -65,6 +65,7 @@ public class OrderService {
             orderDetail.setFoodId(food.getId());
             orderDetail.setQuantity(requestDto.getOrderDetailsRq().get(i).getQuantity());
             orderDetail.setPrice(food.getPrice() * requestDto.getOrderDetailsRq().get(i).getQuantity());
+            orderDetail.setFoodName(food.getName());
             orderDetailRepository.save(orderDetail);
 
             //orderDetailResponse 조립 시작
@@ -86,8 +87,53 @@ public class OrderService {
     }
 
     public List<OrderResponseDto> getOrders () {
-        for (int i = 0; i < orderRepository.findAll().size(); i++) {
 
-        } return null;
+        //리턴 타입을 조립하기 위해 빈 배열로 선언
+        List<OrderResponseDto> orderResponseDtos = new ArrayList<>();
+
+        //조립 시작 - 조립 재료는 OrderResponseDto
+        for (Long i = 0L; i < orderRepository.findAll().size(); i++) {
+
+            //OrderResponseDto를 조립하기 위해  빈 배열로 선언
+            OrderResponseDto orderResponseDto = new OrderResponseDto();
+
+            //조립에 필요한 재료인 order(order들 중 i번째) 불러오기
+            Order order = orderRepository.findAll().get(Math.toIntExact(i));
+
+            //order(i번째)값에서  추출한 값을 i번째 orderResponsDto에 삽입
+            orderResponseDto.setRestaurantName(order.getRestaurantName());
+            orderResponseDto.setDeliveryFee(order.getDeliveryFee());
+
+            //order(i번째)의 orderDetailResponseDtos의 값을 조립하기 위해 빈 배열로 선언
+            List<OrderDetailResponseDto> orderDetailResponseDtos = new ArrayList<>();
+
+            //조립 시작 - 조립 재료는 OrderDetailResponseDto
+            for (Long j = 0L; j < orderDetailRepository.findAllByOrderId(i).size(); j++){
+
+                //조립에 필요한 재료인 OrderDetail(i번째 Order에 바인딩된)들 중 j번째를 불러옴
+                OrderDetail orderDetail = orderDetailRepository.findAllByOrderId(i).get(Math.toIntExact(j));
+
+                // OrderDetailResponseDto에 각 내용을 OrderDetail에서 추출하여 삽입
+                OrderDetailResponseDto orderDetailResponseDto = new OrderDetailResponseDto();
+                orderDetailResponseDto.setFoodName(orderDetail.getFoodName());
+                orderDetailResponseDto.setPrice(orderDetail.getPrice());
+                orderDetailResponseDto.setQuantity(orderDetail.getQuantity());
+
+                //orderDetailResponseDtos 조립
+                orderDetailResponseDtos.add(orderDetailResponseDto);
+            }
+            //조립된 내용물을 orderResponseDto에 삽입
+            orderResponseDto.setOrderDetailRp(orderDetailResponseDtos);
+            //마지막 요소인 totalPrice를 위해 합산을 계산
+            int sum = 0;
+            for (int k = 0; k < orderResponseDtos.size(); k++) {
+                sum += orderDetailResponseDtos.get(k).getPrice();
+            }
+            orderResponseDto.setTotalPrice(sum + order.getDeliveryFee());
+            //orderResponseDtos 조립
+            orderResponseDtos.add(orderResponseDto);
+        }
+        //반환
+        return orderResponseDtos;
     }
 }
