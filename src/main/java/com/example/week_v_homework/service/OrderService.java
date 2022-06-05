@@ -30,14 +30,11 @@ public class OrderService {
 
     public OrderResponseDto orderRequest(OrderRequestDto requestDto) {
 
-        //Order Entity 조립을 위해 먼저 Order 선언
-        Order order = new Order();
+        //Order Entity 조립을 위한 재료 확보
+
         Restaurant restaurant = restaurantRepository.findById(requestDto.getRestaurantId()).orElseThrow(
                 () -> new NullPointerException("해당 식당이 존재하지 않습니다")
         );
-        //Order 레코드 조립
-        order.setRestaurantName(restaurant.getName());
-        order.setDeliveryFee(restaurant.getDeliveryFee());
         int sum = 0;
         for (int i = 0; i < requestDto.getOrderDetailsRq().size(); i++) {
             Food food = foodRepository.findById(requestDto.getOrderDetailsRq().get(i).getFoodId()).orElseThrow(
@@ -45,7 +42,10 @@ public class OrderService {
             );
             sum += food.getPrice() * requestDto.getOrderDetailsRq().get(i).getQuantity();
         }
-        order.setTotalPrice(sum + restaurant.getDeliveryFee());
+        //Order 조립
+        Order order = new Order(restaurant.getName(),restaurant.getDeliveryFee(),sum + restaurant.getDeliveryFee());
+
+        if (restaurant.getMinOrderPrice() > order.getTotalPrice()) {throw new IllegalArgumentException("최소 주문금액 불만족");}
 
         //조립된 order 레코드 저장
         orderRepository.save(order);
@@ -56,16 +56,17 @@ public class OrderService {
 
         for (int i = 0; i < requestDto.getOrderDetailsRq().size(); i++) {
             //저장할 레코드 orderDetail 선언 및 필요한 food 레코드를 불러오기
-            OrderDetail orderDetail = new OrderDetail();
             Food food = foodRepository.findById(requestDto.getOrderDetailsRq().get(i).getFoodId()).orElseThrow(
                     () -> new NullPointerException("해당 음식이 존재하지 않습니다")
             );
             //orderDetail 조립 후 저장
-            orderDetail.setOrderId(order.getId());
-            orderDetail.setFoodId(food.getId());
-            orderDetail.setQuantity(requestDto.getOrderDetailsRq().get(i).getQuantity());
-            orderDetail.setPrice(food.getPrice() * requestDto.getOrderDetailsRq().get(i).getQuantity());
-            orderDetail.setFoodName(food.getName());
+            OrderDetail orderDetail = new OrderDetail(
+                    order.getId(),
+                    food.getId(),
+                    food.getName(),
+                    requestDto.getOrderDetailsRq().get(i).getQuantity(),
+                    food.getPrice() * requestDto.getOrderDetailsRq().get(i).getQuantity()
+            );
             orderDetailRepository.save(orderDetail);
 
             //orderDetailResponse 조립 시작

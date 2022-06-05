@@ -7,5 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface FoodRepository extends JpaRepository<Food, Long> {
-    List<MenuResponseDto> findAllByRestaurantId(Long id);
+    List<Food> findAllByRestaurantId(Long id);
+    Food findByRestaurantIdAndName(Long id, String name);
 }

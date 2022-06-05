@@ -1,6 +1,7 @@
 package com.example.week_v_homework.model;
 
 import com.example.week_v_homework.dto.RestaurantRequestDto;
+import com.example.week_v_homework.validator.RestaurantValidator;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,6 +28,9 @@ public class Restaurant {
     private int deliveryFee;
 
     public Restaurant (RestaurantRequestDto requestDto) {
+
+        RestaurantValidator.validateRestaurantInput(requestDto);
+
         this.name = requestDto.getName();
         this.minOrderPrice = requestDto.getMinOrderPrice();
         this.deliveryFee = requestDto.getDeliveryFee();

@@ -1,5 +1,6 @@
 package com.example.week_v_homework.model;
 
+import com.example.week_v_homework.validator.OrderDetailValidator;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -34,4 +35,14 @@ public class OrderDetail {
     @Column
     private int price;
 
+    public OrderDetail(Long orderId, Long foodId, String foodName, int quantity, int price) {
+
+        OrderDetailValidator.validateOrderDetailIput(orderId,foodId,foodName,quantity);
+
+        this.orderId = orderId;
+        this.foodId = foodId;
+        this.foodName = foodName;
+        Quantity = quantity;
+        this.price = price;
+    }
 }

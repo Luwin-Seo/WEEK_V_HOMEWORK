@@ -2,6 +2,7 @@ package com.example.week_v_homework.controller;
 
 import com.example.week_v_homework.dto.MenuRequestDto;
 import com.example.week_v_homework.dto.MenuResponseDto;
+import com.example.week_v_homework.model.Food;
 import com.example.week_v_homework.repository.FoodRepository;
 import com.example.week_v_homework.service.FoodService;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,7 @@ public class FoodController {
     }
 
     @GetMapping("/foods")
-    public List<MenuResponseDto> getMenuBoard (@PathVariable Long restaurantId) {
+    public List<Food> getMenuBoard (@PathVariable Long restaurantId) {
         return foodRepository.findAllByRestaurantId(restaurantId);
     }
 }

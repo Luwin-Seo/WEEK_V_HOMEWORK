@@ -1,6 +1,7 @@
 package com.example.week_v_homework.model;
 
 import com.example.week_v_homework.dto.MenuRequestDto;
+import com.example.week_v_homework.validator.MenuValidator;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -30,6 +31,9 @@ public class Food {
     private int price;
 
     public Food(Long id, MenuRequestDto requestDto) {
+
+        MenuValidator.validMenuInput(id, requestDto);
+
         this.restaurantId = id;
         this.name = requestDto.getName();
         this.price = requestDto.getPrice();

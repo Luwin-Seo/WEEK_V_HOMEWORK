@@ -7,7 +7,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -15,6 +17,8 @@ public class FoodService {
     private final FoodRepository foodRepository;
 
     public void registerMenu(Long id, List<MenuRequestDto> requestDtos) {
+
+        
         for (MenuRequestDto requestDto : requestDtos) {
             Food food = new Food(id, requestDto);
             foodRepository.save(food);
