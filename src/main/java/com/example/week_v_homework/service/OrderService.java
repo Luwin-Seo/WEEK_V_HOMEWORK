@@ -38,7 +38,6 @@ public class OrderService {
                 () -> new NullPointerException("해당 식당이 존재하지 않습니다")
         );
         int sum = 0;
-        System.out.println(requestDto.getFoods());
         for (int i = 0; i < requestDto.getFoods().size(); i++) {
             Food food = foodRepository.findById(requestDto.getFoods().get(i).getId()).orElseThrow(
                     () -> new NullPointerException("해당 음식이 존재하지 않습니다")
