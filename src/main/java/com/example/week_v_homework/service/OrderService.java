@@ -127,7 +127,7 @@ public class OrderService {
             }
             //조립된 내용물을 orderResponseDto에 삽입
             orderResponseDto.setFoods(orderDetailResponseDtos);
-            //마지막 요소인 totalPrice를 위해 합산을 계산
+            //마지막 요소인 totalPrice를 위해 sum과 deliveryFee를 더하여 주입
 
             orderResponseDto.setTotalPrice(sum + order.getDeliveryFee());
             //orderResponseDtos 조립
