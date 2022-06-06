@@ -16,12 +16,14 @@ import java.util.Set;
 public class FoodService {
     private final FoodRepository foodRepository;
 
+    @Transactional
     public void registerMenu(Long id, List<MenuRequestDto> requestDtos) {
 
-        
-        for (MenuRequestDto requestDto : requestDtos) {
-            Food food = new Food(id, requestDto);
-            foodRepository.save(food);
+        for (int i = 0; i < requestDtos.size(); i++) {
+            if(foodRepository.findByRestaurantIdAndName(id, requestDtos.get(i).getName()).isPresent())
+            {throw new IllegalArgumentException("중복된 메뉴 이름");}
+            else {Food food = new Food(id, requestDtos.get(i));
+            foodRepository.save(food);}
         }
     }
 }
