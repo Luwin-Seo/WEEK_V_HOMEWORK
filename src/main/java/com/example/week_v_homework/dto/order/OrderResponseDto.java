@@ -12,13 +12,13 @@ import java.util.List;
 @Setter
 public class OrderResponseDto {
     private String restaurantName;
-    private List<OrderDetailResponseDto> OrderDetailRp;
+    private List<OrderDetailResponseDto> foods;
     private int deliveryFee;
     private int totalPrice;
 
-    public OrderResponseDto(String restaurantName, List<OrderDetailResponseDto> orderDetailRp, int deliveryFee, int totalPrice) {
+    public OrderResponseDto(String restaurantName, List<OrderDetailResponseDto> foods, int deliveryFee, int totalPrice) {
         this.restaurantName = restaurantName;
-        this.OrderDetailRp = orderDetailRp;
+        this.foods = foods;
         this.deliveryFee = deliveryFee;
         this.totalPrice = totalPrice;
     }

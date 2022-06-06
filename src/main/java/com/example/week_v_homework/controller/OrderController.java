@@ -19,6 +19,7 @@ public class OrderController {
 
     @PostMapping("/order/request")
     public OrderResponseDto orderRequest(@RequestBody OrderRequestDto requestDto) {
+        System.out.println(requestDto);
         return orderService.orderRequest(requestDto);
     }
 

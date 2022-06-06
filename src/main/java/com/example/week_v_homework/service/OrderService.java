@@ -15,6 +15,7 @@ import com.example.week_v_homework.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.weaver.ast.Or;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +29,7 @@ public class OrderService {
     private final OrderDetailRepository orderDetailRepository;
     private final RestaurantRepository restaurantRepository;
 
+    @Transactional
     public OrderResponseDto orderRequest(OrderRequestDto requestDto) {
 
         //Order Entity 조립을 위한 재료 확보
@@ -36,27 +38,28 @@ public class OrderService {
                 () -> new NullPointerException("해당 식당이 존재하지 않습니다")
         );
         int sum = 0;
-        for (int i = 0; i < requestDto.getOrderDetailsRq().size(); i++) {
-            Food food = foodRepository.findById(requestDto.getOrderDetailsRq().get(i).getFoodId()).orElseThrow(
+        System.out.println(requestDto.getFoods());
+        for (int i = 0; i < requestDto.getFoods().size(); i++) {
+            Food food = foodRepository.findById(requestDto.getFoods().get(i).getId()).orElseThrow(
                     () -> new NullPointerException("해당 음식이 존재하지 않습니다")
             );
-            sum += food.getPrice() * requestDto.getOrderDetailsRq().get(i).getQuantity();
+            sum += food.getPrice() * requestDto.getFoods().get(i).getQuantity();
         }
+        //유효성검사
+        if (restaurant.getMinOrderPrice() > sum) {throw new IllegalArgumentException("최소 주문금액 불만족");}
         //Order 조립
         Order order = new Order(restaurant.getName(),restaurant.getDeliveryFee(),sum + restaurant.getDeliveryFee());
-
-        if (restaurant.getMinOrderPrice() > order.getTotalPrice()) {throw new IllegalArgumentException("최소 주문금액 불만족");}
 
         //조립된 order 레코드 저장
         orderRepository.save(order);
 
 
         //orderDetail 과 orderDetailResponse 를 함께 조립 시작
-        List<OrderDetailResponseDto> orderDetailResponseDtos= new ArrayList<>();
+        List<OrderDetailResponseDto> foods= new ArrayList<>();
 
-        for (int i = 0; i < requestDto.getOrderDetailsRq().size(); i++) {
+        for (int i = 0; i < requestDto.getFoods().size(); i++) {
             //저장할 레코드 orderDetail 선언 및 필요한 food 레코드를 불러오기
-            Food food = foodRepository.findById(requestDto.getOrderDetailsRq().get(i).getFoodId()).orElseThrow(
+            Food food = foodRepository.findById(requestDto.getFoods().get(i).getId()).orElseThrow(
                     () -> new NullPointerException("해당 음식이 존재하지 않습니다")
             );
             //orderDetail 조립 후 저장
@@ -64,24 +67,24 @@ public class OrderService {
                     order.getId(),
                     food.getId(),
                     food.getName(),
-                    requestDto.getOrderDetailsRq().get(i).getQuantity(),
-                    food.getPrice() * requestDto.getOrderDetailsRq().get(i).getQuantity()
+                    requestDto.getFoods().get(i).getQuantity(),
+                    food.getPrice() * requestDto.getFoods().get(i).getQuantity()
             );
             orderDetailRepository.save(orderDetail);
 
             //orderDetailResponse 조립 시작
             OrderDetailResponseDto responseDto = new OrderDetailResponseDto();
-            responseDto.setFoodName(food.getName());
-            responseDto.setQuantity(requestDto.getOrderDetailsRq().get(i).getQuantity());
-            responseDto.setPrice(food.getPrice() * requestDto.getOrderDetailsRq().get(i).getQuantity());
+            responseDto.setName(food.getName());
+            responseDto.setQuantity(requestDto.getFoods().get(i).getQuantity());
+            responseDto.setPrice(food.getPrice() * requestDto.getFoods().get(i).getQuantity());
 
             //만들어진 orderDetailReponse를 리스트에 추가
-            orderDetailResponseDtos.add(responseDto);
+            foods.add(responseDto);
         }
         //최종 조립 및 orderResponseDto 반환
         return new OrderResponseDto(
                 restaurant.getName(),
-                orderDetailResponseDtos,
+                foods,
                 restaurant.getDeliveryFee(),
                 order.getTotalPrice()
         );
@@ -93,13 +96,13 @@ public class OrderService {
         List<OrderResponseDto> orderResponseDtos = new ArrayList<>();
 
         //조립 시작 - 조립 재료는 OrderResponseDto
-        for (Long i = 0L; i < orderRepository.findAll().size(); i++) {
+        for (int i = 0; i < orderRepository.findAll().size(); i++) {
 
             //OrderResponseDto를 조립하기 위해  빈 배열로 선언
             OrderResponseDto orderResponseDto = new OrderResponseDto();
 
             //조립에 필요한 재료인 order(order들 중 i번째) 불러오기
-            Order order = orderRepository.findAll().get(Math.toIntExact(i));
+            Order order = orderRepository.findAll().get(i);
 
             //order(i번째)값에서  추출한 값을 i번째 orderResponsDto에 삽입
             orderResponseDto.setRestaurantName(order.getRestaurantName());
@@ -107,29 +110,25 @@ public class OrderService {
 
             //order(i번째)의 orderDetailResponseDtos의 값을 조립하기 위해 빈 배열로 선언
             List<OrderDetailResponseDto> orderDetailResponseDtos = new ArrayList<>();
-
+            int sum = 0;
             //조립 시작 - 조립 재료는 OrderDetailResponseDto
-            for (Long j = 0L; j < orderDetailRepository.findAllByOrderId(i).size(); j++){
+            for (int j = 0; j < orderDetailRepository.findAllByOrderId(order.getId()).size(); j++){
 
                 //조립에 필요한 재료인 OrderDetail(i번째 Order에 바인딩된)들 중 j번째를 불러옴
-                OrderDetail orderDetail = orderDetailRepository.findAllByOrderId(i).get(Math.toIntExact(j));
+                OrderDetail orderDetail = orderDetailRepository.findAllByOrderId(order.getId()).get(j);
 
                 // OrderDetailResponseDto에 각 내용을 OrderDetail에서 추출하여 삽입
-                OrderDetailResponseDto orderDetailResponseDto = new OrderDetailResponseDto();
-                orderDetailResponseDto.setFoodName(orderDetail.getFoodName());
-                orderDetailResponseDto.setPrice(orderDetail.getPrice());
-                orderDetailResponseDto.setQuantity(orderDetail.getQuantity());
+                OrderDetailResponseDto orderDetailResponseDto = new OrderDetailResponseDto(orderDetail.getFoodName(),orderDetail.getQuantity(),orderDetail.getPrice());
 
                 //orderDetailResponseDtos 조립
                 orderDetailResponseDtos.add(orderDetailResponseDto);
+                //하는 김에 sum 도 합산 ㅋㅋ
+                sum += orderDetail.getPrice();
             }
             //조립된 내용물을 orderResponseDto에 삽입
-            orderResponseDto.setOrderDetailRp(orderDetailResponseDtos);
+            orderResponseDto.setFoods(orderDetailResponseDtos);
             //마지막 요소인 totalPrice를 위해 합산을 계산
-            int sum = 0;
-            for (int k = 0; k < orderResponseDtos.size(); k++) {
-                sum += orderDetailResponseDtos.get(k).getPrice();
-            }
+
             orderResponseDto.setTotalPrice(sum + order.getDeliveryFee());
             //orderResponseDtos 조립
             orderResponseDtos.add(orderResponseDto);

@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class OrderDetailResponseDto {
-    private String foodName;
+    private String Name;
     private int quantity;
     private int price;
 }
