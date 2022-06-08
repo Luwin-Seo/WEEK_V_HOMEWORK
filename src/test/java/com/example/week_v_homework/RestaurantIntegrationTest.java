@@ -1,5 +1,6 @@
 package com.example.week_v_homework;
 
+import com.example.week_v_homework.repository.RestaurantRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Builder;
@@ -23,6 +24,9 @@ class RestaurantIntegrationTest {
     @Autowired
     private TestRestTemplate restTemplate;
 
+    @Autowired
+    private RestaurantRepository restaurantRepository;
+
     private HttpHeaders headers;
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -37,6 +41,14 @@ class RestaurantIntegrationTest {
     @Nested
     @DisplayName("음식점 3개 등록 및 조회")
     class RegisterRestaurants {
+
+        @Test
+        @Order(0)
+        @DisplayName("등록된 음식점 초기화")
+        void test0() {
+            restaurantRepository.deleteAll();
+        }
+
         @Test
         @Order(1)
         @DisplayName("음식점1 등록")
